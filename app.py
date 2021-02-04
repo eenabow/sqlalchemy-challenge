@@ -49,26 +49,32 @@ def welcome():
 # def precipitation():
 #         return jsonify(prcp_df)
 
-# @app.route("/api/v1.0/stations<br/>")
+# @app.route("/api/v1.0/stations")
 # def stations():
-        # Create our session (link) from Python to the DB
-        # session = Session(engine)
+#         #Create our session (link) from Python to the DB
+#         session = Session(engine)
 
-        # """Return a list of all station names"""
-        # Query all stations
-        # results = session.query(station.station).all()
+#         """Return a list of all station names"""
+#         #Query all stations
+#         results = session.query(station.station).all()
 
-        # session.close()
+#         session.close()
 
-        # # Convert list of tuples into normal list
-        # all_stations = list(np.ravel(results))
+#         # Convert list of tuples into normal list
+#         all_stations = list(np.ravel(results))
 
-        # return jsonify(all_stations)
+#         return jsonify(all_stations)
 
-# @app.route("/api/v1.0/tobs<br/>")
+# @app.route("/api/v1.0/tobs")
 # def tobs():
 #         return jsonify(Most_active_station)
         
 
-@app.route("/api/v1.0/<start><br/>")
-def 
+# @app.route("/api/v1.0/<start>")
+# def 
+
+# @app.route("/api/v1.0/<start>/<end>")
+# def 
+
+if __name__ == "__main__":
+    app.run(debug=True)
