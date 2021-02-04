@@ -1,6 +1,6 @@
 
 #Import dependencies
-import numpy as pd 
+import numpy as np 
 import sqlalchemy 
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
@@ -45,25 +45,40 @@ def welcome():
         f"/api/v1.0/<start>/<end><br/>"
         )
 
-# @app.route("/api/v1.0/precipitation")
-# def precipitation():
-#         return jsonify(prcp_df)
+@app.route("/api/v1.0/precipitation")
+def precipitation():
+    # Create our session (link) from Python to the DB
+    session = Session(engine)
 
-# @app.route("/api/v1.0/stations")
-# def stations():
-#         #Create our session (link) from Python to the DB
-#         session = Session(engine)
+    """Return a dictionary of dates and precipitation for a year"""
+    # Query all passengers
+        # results = session.query(Passenger.name).all()
+        one_year_ago = recent_date - dt.timedelta(days = 365) 
 
-#         """Return a list of all station names"""
-#         #Query all stations
-#         results = session.query(station.station).all()
+        # Perform a query to retrieve the data and precipitation scores and sort the dataframe by date
+        precipitation_year = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= one_year_ago).order_by(Measurement.date).all()
+        ##CREATE A LIST 
+        precipitation_year
 
-#         session.close()
+    return jsonify(precipitation_year)
+    session.close()
+    
 
-#         # Convert list of tuples into normal list
-#         all_stations = list(np.ravel(results))
+@app.route("/api/v1.0/stations")
+def stations():
+        #Create our session (link) from Python to the DB
+        session = Session(engine)
 
-#         return jsonify(all_stations)
+        """Return a list of all station names"""
+        #Query all stations
+        results = session.query(Station.station).all()
+
+        session.close()
+
+        # Convert list of tuples into normal list
+        all_stations = list(np.ravel(results))
+
+        return jsonify(all_stations)
 
 # @app.route("/api/v1.0/tobs")
 # def tobs():
@@ -72,6 +87,27 @@ def welcome():
 
 # @app.route("/api/v1.0/<start>")
 # def 
+
+##LOOK AT JUSTICE LEAGUE -- START And START END SHOULD ACT LIKE A VARIABLE 
+##SIMILAR TO PART 1 OF TOBS FOR YEAR -- if you put any date in the browser then returns tobs 
+
+justice_league_members = [
+    {"date": "min", "avg", "max"}
+
+    def justice_league_character(date):
+    """Fetch the Justice League character whose real_name matches
+       the path variable supplied by the user, or a 404 if not."""
+
+    canonicalized = date.replace(" ", "").lower()
+    for character in justice_league_members:
+        search_term = character["date"].replace(" ", "").lower() #turn into a datetime object
+
+        if search_term == canonicalized:
+            return jsonify(character)
+
+    return jsonify({"error": f"Character with real_name {real_name} not found."}), 404
+
+
 
 # @app.route("/api/v1.0/<start>/<end>")
 # def 
