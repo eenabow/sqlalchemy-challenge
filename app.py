@@ -37,10 +37,10 @@ app = Flask(__name__)
 def welcome(): 
         print("Server received request for 'Home' page...")
         return ( 
-        f"Available api routes:<br/>"
-        f"/api/v1.0/precipitation<br/>"
-        f"/api/v1.0/stations<br/>"
-        f"/api/v1.0/tobs<br/>"
+        f"Available api routes:<br/>" 
+        f"/api/v1.0/precipitation : Precipitation percentages for the past year<br/>"
+        f"/api/v1.0/stations : Unique stations<br/>"
+        f"/api/v1.0/tobs : Temperatures for the most active station over the past year<br/>"
         f"/api/v1.0/<start><br/>"
         f"/api/v1.0/<start>/<end><br/>"
         )
@@ -95,7 +95,20 @@ def tobs():
         
         #Create our session (link) from Python to the DB
         session = Session(engine)
-        most_active_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281').all()
+
+        #Parse through to turn string into datetime object
+        recent_date = session.query(func.max(Measurement.date)).all() [0][0]
+
+        recent_year = int(recent_date[0:4])
+        recent_month = int(recent_date[5:7])
+        recent_day = int(recent_date[8:])
+
+        recent_date = dt.date(recent_year,recent_month, recent_day)
+
+        """Return a dictionary of dates and precipitation for a year"""
+        one_year_ago = recent_date - dt.timedelta(days = 365) 
+
+        most_active_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281', Measurement.date >= one_year_ago).all()
 
         Most_active_station = list(np.ravel(most_active_station))
         return jsonify(Most_active_station)
@@ -103,8 +116,19 @@ def tobs():
         session.close()
 
 #########################################################################################################################
-# # @app.route("/api/v1.0/<start>")
-# # def 
+@app.route("/api/v1.0/<start>")
+def start_date_lookup(start):
+
+    #Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    years = session.query(Measurement.date).all()[0]
+    if start[0:4] not in 
+        return (
+            f'ERROR: Date not found, use yyyymmdd format<br/>'
+            f'Years available: {years_available}'
+        )
+
 
 # ##LOOK AT JUSTICE LEAGUE -- START And START END SHOULD ACT LIKE A VARIABLE 
 # ##SIMILAR TO PART 1 OF TOBS FOR YEAR -- if you put any date in the browser then returns tobs 
