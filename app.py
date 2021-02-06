@@ -140,21 +140,51 @@ def start_date_lookup(start):
     #Query Min, Max, & Avg temps for user's input
     Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input).one()
 
-    if start_input == Measurement_date:
+    if start_input == Measurement.date:
        return (
             f'The minimum temperature was {Min} degrees Fahrenheit, reported at Station ID {Station}<br/>'
             f'The maximum temperature was {Max} degrees Fahrenheit, reported at Station ID {Station}<br/>'
             f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
               )
     else:
-     return (f"ERROR: Date not found, use yyyymmdd format<br/>")
+        return (f"ERROR: Date not found, use yyyymmdd format<br/>")
     #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
 
 
     session.close()
 
 # # @app.route("/api/v1.0/<start>/<end>")
-# # def 
+# # def start_end_lookup(start, end)
+# #Create our session (link) from Python to the DB
+#     session = Session(engine)
 
+#     #Reformat user's input 
+#     start_year = str(start)[0:4]
+#     start_month = str(start)[4:6]
+#     start_date = str(start)[8:]
+#     start_input = dt.date(int(start_year), int(start_month), int(start_date))
+
+
+#     #Reformat user's input 
+#     end_year = str(end)[0:4]
+#     end_month = str(end)[4:6]
+#     end_date = str(end)[8:]
+#     end_input = dt.date(int(end_year), int(end_month), int(end_date))
+
+#     #Query Min, Max, & Avg temps for user's input
+#     Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input and Measurement.date <= end_input).scalar()
+
+#     if start_input == Measurement_date:
+#        return (
+#             f'The minimum temperature was {Min} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+#             f'The maximum temperature was {Max} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+#             f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+#               )
+#     else:
+#         return (f"ERROR: Date not found, use yyyymmdd format<br/>")
+    #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
+
+
+    session.close()
 if __name__ == "__main__":
     app.run(debug=True)
