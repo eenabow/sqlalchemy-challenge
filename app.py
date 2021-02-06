@@ -51,7 +51,13 @@ total_stations_query = session.query(Measurement.station, func.count(Measurement
 
 most_active_stations = total_stations_query.group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).all()
 
+# Station= Base.classes.station
 
+# most_active = session.query(Measurement.station, Measurement.tobs, Measurement.date).filter(Measurement.station == Station, Measurement.date >= one_year_ago).order_by(Measurement.date)[0][0]
+
+# # Most_active_station = pd.DataFrame(most_active)
+
+# # Most_active_station
 
 session.close()
 
@@ -134,29 +140,39 @@ def start_date_lookup(start):
     start_year = (start[0:4])
     start_month = (start[4:6])
     start_date = (start[6:])
-    start_input = dt.date(int(start_year), int(start_month), int(start_date))
+    start_input = dt.date(int(start_year), int(start_month), int(start_date)).strftime('%Y-%m-%d')
 
 
     #Query Min, Max, & Avg temps for user's input
 
-    Max = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
-    Min = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
-    Avg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
-    # Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), 
+    # Max = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    # Min = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    # Avg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    results = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).all() 
     # Measurement.station).filter(Measurement.date >= start_input).one()
-
-    if start_input == Measurement.date:
-       return (
-            f'The minimum temperature was {Min} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-            f'The maximum temperature was {Max} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-            f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-              )
-    else:
-        return (f"ERROR: Date not found, use yyyymmdd format<br/>")
-    #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
 
 
     session.close()
+
+    start_date_tobs = []
+    for min, avg, max in results:
+        start_date_tobs_dict = {}
+        start_date_tobs_dict["min_temp"] = min
+        start_date_tobs_dict["avg_temp"] = avg
+        start_date_tobs_dict["max_temp"] = max
+        start_date_tobs.append(start_date_tobs_dict) 
+    return jsonify(start_date_tobs)
+
+    # if Measurement.date == start_input:
+    #    return (
+    #         f'The minimum temperature was {Min} degrees Fahrenheit, <br/>'
+    #         f'The maximum temperature was {Max} degrees Fahrenheit, <br/>'
+    #         # f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+    #           )
+    # else:
+    #     return (f"ERROR: Date not found, use yyyymmdd format<br/>")
+    # #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
+
 
 # # @app.route("/api/v1.0/<start>/<end>")
 # # def start_end_lookup(start, end)
