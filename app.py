@@ -122,16 +122,25 @@ def start_date_lookup(start):
     #Create our session (link) from Python to the DB
     session = Session(engine)
 
-    years = session.query(Measurement.date).all()[0]
-    if start[0:4] not in 
-        return (
-            f'ERROR: Date not found, use yyyymmdd format<br/>'
-            f'Years available: {years_available}'
+    # years = session.query(Measurement.date).all()[0]
+    # if start[0:4] not in 
+    #     return (
+    #         f'ERROR: Date not found, use yyyymmdd format<br/>'
+    #         f'Years available: {years_available}'
         )
 
+    #Reformat user's input 
+    start_year = str(start)[0:4]
+    start_month = str(start)[4:6]
+    start_date = str(start)[8:]
+    start_input = dt.date(int(start_year), int(start_month), int(start_date))
 
-# ##LOOK AT JUSTICE LEAGUE -- START And START END SHOULD ACT LIKE A VARIABLE 
-# ##SIMILAR TO PART 1 OF TOBS FOR YEAR -- if you put any date in the browser then returns tobs 
+
+    #Query Min, Max, & Avg temps for user's input
+    Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.station == most_active_stations[0][0]).first()
+
+
+
 
 # justice_league_members = [
 #     {"date": "min", "avg", "max"}
