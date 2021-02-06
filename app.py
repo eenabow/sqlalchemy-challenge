@@ -144,13 +144,7 @@ def start_date_lookup(start):
 
 
     #Query Min, Max, & Avg temps for user's input
-
-    # Max = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
-    # Min = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
-    # Avg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
     results = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).all() 
-    # Measurement.station).filter(Measurement.date >= start_input).one()
-
 
     session.close()
 
@@ -161,51 +155,43 @@ def start_date_lookup(start):
         start_date_tobs_dict["avg_temp"] = avg
         start_date_tobs_dict["max_temp"] = max
         start_date_tobs.append(start_date_tobs_dict) 
+    print("Years available: 2010-2017, please use yyyymmdd format.<br/>")
     return jsonify(start_date_tobs)
 
-    # if Measurement.date == start_input:
-    #    return (
-    #         f'The minimum temperature was {Min} degrees Fahrenheit, <br/>'
-    #         f'The maximum temperature was {Max} degrees Fahrenheit, <br/>'
-    #         # f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-    #           )
-    # else:
-    #     return (f"ERROR: Date not found, use yyyymmdd format<br/>")
-    # #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_end_lookup(start, end):
+#Create our session (link) from Python to the DB
+    session = Session(engine)
+
+    #Reformat user's input 
+    start_year = (start[0:4])
+    start_month = (start[4:6])
+    start_date = (start[6:])
+    start_input = dt.date(int(start_year), int(start_month), int(start_date)).strftime('%Y-%m-%d')
 
 
-# # @app.route("/api/v1.0/<start>/<end>")
-# # def start_end_lookup(start, end)
-# #Create our session (link) from Python to the DB
-#     session = Session(engine)
+    #Reformat user's input 
+    end_year = (end[0:4])
+    end_month = (end[4:6])
+    end_date = (end[6:])
+    end_input = dt.date(int(end_year), int(end_month), int(end_date)).strftime('%Y-%m-%d')
 
-#     #Reformat user's input 
-#     start_year = str(start)[0:4]
-#     start_month = str(start)[4:6]
-#     start_date = str(start)[8:]
-#     start_input = dt.date(int(start_year), int(start_month), int(start_date))
-
-
-#     #Reformat user's input 
-#     end_year = str(end)[0:4]
-#     end_month = str(end)[4:6]
-#     end_date = str(end)[8:]
-#     end_input = dt.date(int(end_year), int(end_month), int(end_date))
-
-#     #Query Min, Max, & Avg temps for user's input
-#     Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input and Measurement.date <= end_input).scalar()
-
-#     if start_input == Measurement_date:
-#        return (
-#             f'The minimum temperature was {Min} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-#             f'The maximum temperature was {Max} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-#             f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
-#               )
-#     else:
-#         return (f"ERROR: Date not found, use yyyymmdd format<br/>")
-    #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
-
-
+    #Query Min, Max, & Avg temps for user's input
+    results2= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input).filter (Measurement.date <= end_input).all()
+    
     session.close()
+
+    end_date_tobs = []
+    for min, avg, max in results2:
+        end_date_tobs_dict = {}
+        end_date_tobs_dict["min_temp"] = min
+        end_date_tobs_dict["avg_temp"] = avg
+        end_date_tobs_dict["max_temp"] = max
+        end_date_tobs.append(end_date_tobs_dict) 
+    print("Years available: 2010-2017, please use yyyymmdd format.<br/>")
+    return jsonify(end_date_tobs)
+
+   
 if __name__ == "__main__":
     app.run(debug=True)
