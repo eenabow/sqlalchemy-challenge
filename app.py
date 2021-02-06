@@ -46,6 +46,10 @@ recent_date = dt.date(recent_year,recent_month, recent_day)
 """Return a dictionary of dates and precipitation for a year"""
 one_year_ago = recent_date - dt.timedelta(days = 365) 
 
+#Find most active station
+total_stations_query = session.query(Measurement.station, func.count(Measurement.station))
+
+most_active_stations = total_stations_query.group_by(Measurement.station).order_by(func.count(Measurement.station).desc()).all()
 
 
 
@@ -69,8 +73,8 @@ def welcome():
         f"/api/v1.0/precipitation : Precipitation percentages for the past year<br/>"
         f"/api/v1.0/stations : Unique stations<br/>"
         f"/api/v1.0/tobs : Temperatures for the most active station over the past year<br/>"
-        f"/api/v1.0/<start><br/>"
-        f"/api/v1.0/<start>/<end><br/>"
+        f"/api/v1.0/<start> : User inputs given start date (yyyymmdd) to search for minimum, maximum, and average temperature <br/>"
+        f"/api/v1.0/<start>/<end> : User inputs given start date (yyyymmdd) and end date (yyyymmdd) to search for minimum, maximum, and average temperature<br/>"
         )
 
 #########################################################################################################################
@@ -78,18 +82,6 @@ def welcome():
 def precipitation():
     # Create our session (link) from Python to the DB
     session = Session(engine)
-
-    # #Parse through to turn string into datetime object
-    # recent_date = session.query(func.max(Measurement.date)).all() [0][0]
-
-    # recent_year = int(recent_date[0:4])
-    # recent_month = int(recent_date[5:7])
-    # recent_day = int(recent_date[8:])
-
-    # recent_date = dt.date(recent_year,recent_month, recent_day)
-
-    # """Return a dictionary of dates and precipitation for a year"""
-    # one_year_ago = recent_date - dt.timedelta(days = 365) 
 
     # Perform a query to retrieve the data and precipitation scores and sort the dataframe by date
     precipitation_year = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= one_year_ago).order_by(Measurement.date).all()
@@ -124,19 +116,7 @@ def tobs():
         #Create our session (link) from Python to the DB
         session = Session(engine)
 
-        # #Parse through to turn string into datetime object
-        # recent_date = session.query(func.max(Measurement.date)).all() [0][0]
-
-        # recent_year = int(recent_date[0:4])
-        # recent_month = int(recent_date[5:7])
-        # recent_day = int(recent_date[8:])
-
-        # recent_date = dt.date(recent_year,recent_month, recent_day)
-
-        # """Return a dictionary of dates and precipitation for a year"""
-        # one_year_ago = recent_date - dt.timedelta(days = 365) 
-
-        most_active_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281', Measurement.date >= one_year_ago).all()
+        most_active_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == most_active_stations[0][0], Measurement.date >= one_year_ago).all()
 
         Most_active_station = list(np.ravel(most_active_station))
         return jsonify(Most_active_station)
@@ -150,13 +130,6 @@ def start_date_lookup(start):
     #Create our session (link) from Python to the DB
     session = Session(engine)
 
-    # years = session.query(Measurement.date).all()[0]
-    # if start[0:4] not in 
-    #     return (
-    #         f'ERROR: Date not found, use yyyymmdd format<br/>'
-    #         f'Years available: {years_available}'
-        # )
-
     #Reformat user's input 
     start_year = str(start)[0:4]
     start_month = str(start)[4:6]
@@ -165,28 +138,20 @@ def start_date_lookup(start):
 
 
     #Query Min, Max, & Avg temps for user's input
-    Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.station == most_active_stations[0][0]).first()
+    Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input).one()
+
+    if start_input == Measurement_date:
+       return (
+            f'The minimum temperature was {Min} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+            f'The maximum temperature was {Max} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+            f'The average temperature was {Avg} degrees Fahrenheit, reported at Station ID {Station}<br/>'
+              )
+    else:
+     return (f"ERROR: Date not found, use yyyymmdd format<br/>")
+    #         f'Years available: {years_available}'Character with real_name {real_name} not found."}), 404
 
 
-
-
-# justice_league_members = [
-#     {"date": "min", "avg", "max"}
-
-#     def justice_league_character(date):
-#     """Fetch the Justice League character whose real_name matches
-#        the path variable supplied by the user, or a 404 if not."""
-
-#     canonicalized = date.replace(" ", "").lower()
-#     for character in justice_league_members:
-#         search_term = character["date"].replace(" ", "").lower() #turn into a datetime object
-
-#         if search_term == canonicalized:
-#             return jsonify(character)
-
-#     return jsonify({"error": f"Character with real_name {real_name} not found."}), 404
-
-
+    session.close()
 
 # # @app.route("/api/v1.0/<start>/<end>")
 # # def 
