@@ -131,14 +131,19 @@ def start_date_lookup(start):
     session = Session(engine)
 
     #Reformat user's input 
-    start_year = str(start)[0:4]
-    start_month = str(start)[4:6]
-    start_date = str(start)[8:]
+    start_year = (start[0:4])
+    start_month = (start[4:6])
+    start_date = (start[6:])
     start_input = dt.date(int(start_year), int(start_month), int(start_date))
 
 
     #Query Min, Max, & Avg temps for user's input
-    Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input).one()
+
+    Max = session.query(func.max(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    Min = session.query(func.min(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    Avg = session.query(func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).scalar()
+    # Min,Max,Avg,Station= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), 
+    # Measurement.station).filter(Measurement.date >= start_input).one()
 
     if start_input == Measurement.date:
        return (
