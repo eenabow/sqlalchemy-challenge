@@ -30,6 +30,34 @@ Station= Base.classes.station
 app = Flask(__name__)
 
 #########################################################################################################################
+# Setting variables
+#########################################################################################################################
+session = Session(engine)
+
+#Parse through to turn string into datetime object
+recent_date = session.query(func.max(Measurement.date)).all() [0][0]
+
+recent_year = int(recent_date[0:4])
+recent_month = int(recent_date[5:7])
+recent_day = int(recent_date[8:])
+
+recent_date = dt.date(recent_year,recent_month, recent_day)
+
+"""Return a dictionary of dates and precipitation for a year"""
+one_year_ago = recent_date - dt.timedelta(days = 365) 
+
+
+
+
+session.close()
+
+
+
+
+
+
+
+#########################################################################################################################
 # FLASK ROUTES
 #########################################################################################################################
 
@@ -51,17 +79,17 @@ def precipitation():
     # Create our session (link) from Python to the DB
     session = Session(engine)
 
-    #Parse through to turn string into datetime object
-    recent_date = session.query(func.max(Measurement.date)).all() [0][0]
+    # #Parse through to turn string into datetime object
+    # recent_date = session.query(func.max(Measurement.date)).all() [0][0]
 
-    recent_year = int(recent_date[0:4])
-    recent_month = int(recent_date[5:7])
-    recent_day = int(recent_date[8:])
+    # recent_year = int(recent_date[0:4])
+    # recent_month = int(recent_date[5:7])
+    # recent_day = int(recent_date[8:])
 
-    recent_date = dt.date(recent_year,recent_month, recent_day)
+    # recent_date = dt.date(recent_year,recent_month, recent_day)
 
-    """Return a dictionary of dates and precipitation for a year"""
-    one_year_ago = recent_date - dt.timedelta(days = 365) 
+    # """Return a dictionary of dates and precipitation for a year"""
+    # one_year_ago = recent_date - dt.timedelta(days = 365) 
 
     # Perform a query to retrieve the data and precipitation scores and sort the dataframe by date
     precipitation_year = session.query(Measurement.date, Measurement.prcp).filter(Measurement.date >= one_year_ago).order_by(Measurement.date).all()
@@ -96,17 +124,17 @@ def tobs():
         #Create our session (link) from Python to the DB
         session = Session(engine)
 
-        #Parse through to turn string into datetime object
-        recent_date = session.query(func.max(Measurement.date)).all() [0][0]
+        # #Parse through to turn string into datetime object
+        # recent_date = session.query(func.max(Measurement.date)).all() [0][0]
 
-        recent_year = int(recent_date[0:4])
-        recent_month = int(recent_date[5:7])
-        recent_day = int(recent_date[8:])
+        # recent_year = int(recent_date[0:4])
+        # recent_month = int(recent_date[5:7])
+        # recent_day = int(recent_date[8:])
 
-        recent_date = dt.date(recent_year,recent_month, recent_day)
+        # recent_date = dt.date(recent_year,recent_month, recent_day)
 
-        """Return a dictionary of dates and precipitation for a year"""
-        one_year_ago = recent_date - dt.timedelta(days = 365) 
+        # """Return a dictionary of dates and precipitation for a year"""
+        # one_year_ago = recent_date - dt.timedelta(days = 365) 
 
         most_active_station = session.query(Measurement.date, Measurement.tobs).filter(Measurement.station == 'USC00519281', Measurement.date >= one_year_ago).all()
 
@@ -127,7 +155,7 @@ def start_date_lookup(start):
     #     return (
     #         f'ERROR: Date not found, use yyyymmdd format<br/>'
     #         f'Years available: {years_available}'
-        )
+        # )
 
     #Reformat user's input 
     start_year = str(start)[0:4]
