@@ -178,8 +178,8 @@ def start_end_lookup(start, end):
     end_input = dt.date(int(end_year), int(end_month), int(end_date)).strftime('%Y-%m-%d')
 
     #Query Min, Max, & Avg temps for user's input
-    results2= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs), Measurement.station).filter(Measurement.date >= start_input).filter (Measurement.date <= end_input).all()
-    
+    results2= session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).filter(Measurement.date >= start_input).filter (Measurement.date <= end_input).all()
+    # results2= session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).filter(Measurement.date >= start).filter(Measurement.date <= stop).all()
     session.close()
 
     end_date_tobs = []
