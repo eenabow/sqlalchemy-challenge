@@ -33,4 +33,4 @@ Assignment:
 
 Challenges: 
   * Readjusting xticks on bargraph 
-  * Using datetime objects to reformat users entry
+  * Using datetime objects to reformat users entry on start and end routes
