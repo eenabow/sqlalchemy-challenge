@@ -4,7 +4,7 @@ To begin, I used Python and SQLAlchemy to do basic climate analysis and data exp
 Includes: 
 * Output bargraph of precipitation data over the course of a year 
 * Output histogram of temperature observations at Hawaii's most active station
-* Flask API that allows users to interact:
+* Flask API that allows users to interact and photos in "Routes" folder:
     * / - Homepage listing all routes available 
     * /api/v1.0/precipitation - Retrieves the last 12 months of precipitation data 
     * /api/v1.0/stations - Lists all stations from the dataset
@@ -13,6 +13,7 @@ Includes:
 
 
 Assignment: 
+
 **Precipitation Analysis**
     * Finding the most recent date in the data set.
     * Using this date, retrieve the last 12 months of precipitation data by querying the 12 preceding months of data. 
